@@ -27,3 +27,12 @@ class Post(Base):
     image_url = Column(String, nullable=True)
     #image_url = UploadFile = File(...)
     is_active = Column(Boolean, default=True)
+
+
+class Image(Base):
+    __tablename__ = "images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    post_id = Column(Integer, ForeignKey("posts.id"), nullable=False)
+    image_data = Column(LargeBinary, nullable=False)
+    image_url = Column(String, nullable=True)

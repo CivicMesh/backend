@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
+import uuid
+from fastapi import APIRouter, FastAPI, HTTPException, Depends, File, UploadFile
 from pydantic import BaseModel
 from typing import List, Annotated
 import models
@@ -9,7 +10,7 @@ from passlib.context import CryptContext
 import bcrypt
 import auth
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
+from fastapi.responses import Response
 username = "testuser"
 password = "testpassword"
 
@@ -29,6 +30,7 @@ def verify_password(plain_password, hashed_password):
 
 
 app = FastAPI()
+router = APIRouter()
 security = HTTPBasic()
 #app.include_router(auth.router)
 models.Base.metadata.create_all(bind=engine)
@@ -160,3 +162,52 @@ def update_post(post_id: int, updated_post: CreatePost, db: db_dependency, crede
     db.commit()
     db.refresh(post)
     return post 
+
+@app.post("/upload-image/{post_id}")
+async def upload_image(post_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    try:
+        image_bytes = await file.read()
+
+        new_image = models.Image(
+            post_id=post_id,
+            image_data=image_bytes,
+            image_url=None  # optional
+        )
+        db.add(new_image)
+        db.commit()
+        db.refresh(new_image)
+
+        return {"message": "Image uploaded", "image_id": new_image.id}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+"""@app.get("/image/{image_id}")
+def get_image(image_id: int, db: Session = Depends(get_db)):
+    image = db.query(models.Image).filter(models.Image.id == image_id).first()
+
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return Response(
+        content=image.image_data,
+        media_type="image/jpeg"   # or detect automatically
+    )"""
+
+@app.get("/image/{post_id}")
+def get_post_image(post_id: int, db: Session = Depends(get_db)):
+    image = (
+        db.query(models.Image)
+        .filter(models.Image.post_id == post_id)
+        .first()
+    )
+
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return Response(
+        content=image.image_data,
+        media_type="image/jpeg"
+    )
+
