@@ -60,7 +60,7 @@ This API is intended for use with a React Native mobile frontend.
 | Authentication | HTTP Basic + bcrypt |
 | Image Storage | PostgreSQL (LargeBinary) |
 | Dependencies | Listed in `requirements.txt` |
-| Deployment | (Specify if applicable) |
+| Deployment | Render (CI/CD) |
 
 ---
 
@@ -263,5 +263,5 @@ curl -X POST http://localhost:8000/posts/ -H "Content-Type: application/json" -d
 
 ## Contributors
 
-- Backend Development: Your Name  
-- Mobile Application Development: (Team Members, if applicable)
+- Backend Development: Nagasharan Sathish, Abhaya Neupane, Yashas Suresh 
+- Mobile Application Development: Nagasharan Sathish, Abhaya Neupane, Yashas Suresh 
