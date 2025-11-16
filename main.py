@@ -149,3 +149,14 @@ def get_post(post_id: int, db: db_dependency, credentials: Annotated[HTTPBasicCr
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
+
+@app.put("/posts/{post_id}", response_model=Post)
+def update_post(post_id: int, updated_post: CreatePost, db: db_dependency, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    for key, value in updated_post.dict().items():
+        setattr(post, key, value)
+    db.commit()
+    db.refresh(post)
+    return post 
