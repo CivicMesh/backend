@@ -10,6 +10,8 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
 
+
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -23,4 +25,5 @@ class Post(Base):
     longitude = Column(Float, nullable=True)
     latitude = Column(Float, nullable=True)
     image_url = Column(String, nullable=True)
+    #image_url = UploadFile = File(...)
     is_active = Column(Boolean, default=True)
